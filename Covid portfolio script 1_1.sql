@@ -1,12 +1,12 @@
+/*
+Covid 19 Data Exploration
+SQL skills applied in doing this project
+*/
 SELECT *
 FROM PortfolioProject ..CovidDeaths
 WHERE continent IS NOT NULL
 ORDER BY 3, 4
 
-
---SELECT *
---FROM PortfolioProject ..CovidVaccinations
---ORDER BY 3, 4
 
 -- To select data we will use for this project
 
@@ -62,26 +62,6 @@ GROUP BY location
 ORDER BY TotalDeathCount DESC
 
 
--- To break into Continent
-
-
-SELECT continent,  MAX(cast(total_deaths as int)) AS TotalDeathCount
-FROM PortfolioProject..CovidDeaths
---WHERE Location like '%state%'
-WHERE continent IS NOT NULL
-GROUP BY continent
-ORDER BY TotalDeathCount DESC
-
-
--- Global Numbers
-
-SELECT Date, SUM(new_cases) AS total_cases, SUM(cast(new_deaths as int)) AS  total_deaths, SUM(cast (new_deaths as int)) /SUM(new_cases)* 100 AS DeathPercentage
-FROM PortfolioProject..CovidDeaths
---WHERE Location LIKE '%state%'
-WHERE continent IS NOT NULL
-GROUP BY date
-ORDER BY 1, 2
-
 -- Global Numbers
 
 SELECT SUM(new_cases) AS total_cases, SUM(cast(new_deaths as int)) AS  total_deaths, SUM(cast (new_deaths as int)) /SUM(new_cases)* 100 AS DeathPercentage
@@ -94,46 +74,16 @@ ORDER BY 1, 2
 --Acessing Total Population Vs vaccination
 
 
-SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations
-FROM PortfolioProject..CovidDeaths dea
-JOIN PortfolioProject..CovidVaccinations vac
-     ON dea.location = vac.location
-	 AND dea.date = vac.date
-WHERE dea.continent IS NOT NULL
-ORDER BY 2,3
-
-
-
-
 SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, SUM(cast(vac.new_vaccinations as int)) OVER (Partition By dea.location Order By dea.location,dea.date)
 FROM PortfolioProject..CovidDeaths dea
 JOIN PortfolioProject..CovidVaccinations vac
      ON dea.location = vac.location
-	 AND dea.date = vac.date
+     AND dea.date = vac.date
 WHERE dea.continent IS NOT NULL
 ORDER BY 2,3
 
 
-SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, SUM(cast(vac.new_vaccinations as int)) OVER (Partition By dea.location Order By dea.location,dea.date) AS RollingPeopleVaccinated
-FROM PortfolioProject..CovidDeaths dea
-JOIN PortfolioProject..CovidVaccinations vac
-     ON dea.location = vac.location
-	 AND dea.date = vac.date
-WHERE dea.continent IS NOT NULL
-ORDER BY 2,3
-
-
-SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, SUM(cast(vac.new_vaccinations as int)) OVER (Partition By dea.location Order By dea.location,dea.date)
-FROM PortfolioProject..CovidDeaths dea
-JOIN PortfolioProject..CovidVaccinations vac
-     ON dea.location = vac.location
-	 AND dea.date = vac.date
-WHERE dea.continent IS NOT NULL
-ORDER BY 2,3
-
-
-
--- USE CTE
+-- Using CTE to perform calculation on Partition By in the earlier query
 
 With PopvsVac (Continent, Location, date, Population, new_vaccinations,  RollingPeopleVaccinated)
 AS
@@ -151,7 +101,7 @@ FROM PopvsVac
 
 
 
--- Time Table
+-- Using Tem Table to perform claculation on Partition By in earlier query
 CREATE Table #PercentPopulationVaccinated
 (
 continent nvarchar(255),
@@ -180,8 +130,8 @@ SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinatio
 FROM PortfolioProject..CovidDeaths dea
 JOIN PortfolioProject..CovidVaccinations vac
      ON dea.location = vac.location
-	 AND dea.date = vac.date
+     AND dea.date = vac.date
 WHERE dea.continent IS NOT NULL
---ORDER BY 2,3
 
-SELECT FROM PercentPopulationVaccinated
+
+
